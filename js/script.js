@@ -53,7 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderTasks(tasks) {
         return tasks.map(task => `
             <div class="flex justify-between text-lg items-center">
-                <p class="${task.done ? 'line-through text-gray-500' : ''}">${task.text}</p>
+                <div>
+                    <span>⫶</span>
+                    <p class="${task.done ? 'line-through text-gray-500' : ''}">${task.text}</p>
+                </div>
                 <img src="../images/${task.done ? 'circle-filled.png' : 'circle.png'}" class="h-6">
             </div>
         `).join("");
