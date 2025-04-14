@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="output.css">
+    <title>Document</title>
+</head>
+<body>
+   
+    <div id="detail-container" class="p-3">
+       
+    </div>
+    <script src="../js/detail.js"> </script>
+</body>
+</html>

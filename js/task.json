@@ -1,0 +1,27 @@
+[
+    {
+        "text": "Pemweb tugas 3",
+        "done": false,
+        "date": "2025-04-03"
+    },
+    {
+        "text": "Meeting malem",
+        "done": false,
+        "date": "2025-04-05"
+    },
+    {
+        "text": "Power BI Dashboard",
+        "done": true,
+        "date": "2025-04-02"
+    },
+    {
+        "text": "Lari sore",
+        "done": false,
+        "date": "2025-04-02"
+    },
+    {
+        "text": "Jemput adik",
+        "done": false,
+        "date": "2025-04-04"
+    }
+]
