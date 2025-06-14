@@ -8,13 +8,6 @@ class Recap extends Controller
         $model = $this->loadModel('TodoModel');
         $todayTodos = $model->getTodos(0, true);
         $allTodos = $model->getTodos(0);
-
-        // echo "<h3>Contoh Input dan Output</h3>";
-        // echo "<pre>";
-        // echo "Input untuk getTodos(0, true):\n";
-        // var_dump(['is_done' => 0, 'today_only' => true]);
-        // echo "\nOutput dari getTodos(0, true):\n";
-        // var_dump($allTodos);
         $this->loadView('todorecap.php', [
             'all' => $allTodos,
             'today' => $todayTodos

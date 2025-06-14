@@ -31,7 +31,7 @@
                 <?php foreach ($today as $todo): ?>
                     <div class="flex justify-between text-lg items-center">
                         <div class="flex items-center">
-                            <span class="text-customBlue-dark font-extrabold">⫶</span>
+                            <span class="text-customBlue-dark font-extrabold cursor-pointer open-delete-modal" data-id="<?= $todo['id'] ?>">⫶</span>
                             <div class="ms-3">
                                 <p class="font-medium"><?= $todo['title'] ?></p>
                                 <p class="text-sm text-gray-500">Due: <?= date('d M Y', strtotime($todo['due_date'])) ?></p>
@@ -57,7 +57,6 @@
                     <div class="flex justify-between text-lg items-center">
                         <div class="flex items-center">
                             <span class="text-customBlue-dark font-extrabold cursor-pointer open-delete-modal" data-id="<?= $todo['id'] ?>">⫶</span>
-
                             <div class="ms-3">
                                 <p class="font-medium"><?= $todo['title'] ?></p>
                                 <p class="text-sm text-gray-500">Due: <?= date('d M Y', strtotime($todo['due_date'])) ?></p>

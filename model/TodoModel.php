@@ -7,8 +7,7 @@ class TodoModel extends Model
         $is_done,
         $today_only = false
     ) {
-        $is_done = (int) $is_done;
-
+        $is_done = intval($is_done);
         $query = "SELECT * FROM todos WHERE is_done = $is_done ORDER BY due_date ASC";
 
         if ($today_only) {
@@ -32,4 +31,6 @@ class TodoModel extends Model
         $query = "DELETE FROM todos WHERE id = $id";
         return $this->db->query($query);
     }
+
+    
 }
