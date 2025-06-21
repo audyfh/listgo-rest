@@ -10,7 +10,7 @@
 
 <body class="font-poppins">
     <header class=" font-poppins flex justify-between items-center p-5 font-bold ">
-        <button class="text-xl">☰</button>
+        <a href="index.php?c=Category&m=index"> <button class="text-xl">☰</button></a>
         <h1 class=" text-2xl text-customBlue-dark">Todo Recap</h1>
         <div></div>
     </header>
