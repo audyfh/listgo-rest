@@ -10,7 +10,7 @@
 
 <body class="font-poppins">
     <header class=" font-poppins flex justify-between items-center p-5 font-bold ">
-        <button class="text-xl">☰</button>
+        <a href="index.php?c=Category&m=index"> <button class="text-xl">☰</button></a>
         <h1 class=" text-2xl text-customBlue-dark">Todo Recap</h1>
         <div></div>
     </header>
@@ -31,7 +31,7 @@
                 <?php foreach ($today as $todo): ?>
                     <div class="flex justify-between text-lg items-center">
                         <div class="flex items-center">
-                            <span class="text-customBlue-dark font-extrabold">⫶</span>
+                            <span class="text-customBlue-dark font-extrabold cursor-pointer open-delete-modal" data-id="<?= $todo['id'] ?>">⫶</span>
                             <div class="ms-3">
                                 <p class="font-medium"><?= $todo['title'] ?></p>
                                 <p class="text-sm text-gray-500">Due: <?= date('d M Y', strtotime($todo['due_date'])) ?></p>
@@ -57,7 +57,6 @@
                     <div class="flex justify-between text-lg items-center">
                         <div class="flex items-center">
                             <span class="text-customBlue-dark font-extrabold cursor-pointer open-delete-modal" data-id="<?= $todo['id'] ?>">⫶</span>
-
                             <div class="ms-3">
                                 <p class="font-medium"><?= $todo['title'] ?></p>
                                 <p class="text-sm text-gray-500">Due: <?= date('d M Y', strtotime($todo['due_date'])) ?></p>

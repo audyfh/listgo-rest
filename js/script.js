@@ -1,5 +1,3 @@
-
-
 const modal = document.getElementById("delete-modal");
 const confirmBtn = document.getElementById("confirm-delete");
 const cancelBtn = document.getElementById("cancel-delete");

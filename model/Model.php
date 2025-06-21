@@ -9,7 +9,7 @@ class Model
         $hostname = 'localhost:3306';
         $username = 'root';
         $password = ''; 
-        $dbname   = 'listngo';
+        $dbname   = 'listngodb';
 
         $this->db = new mysqli(
             $hostname,

@@ -3,18 +3,20 @@
 class Recap extends Controller
 {
 
+    function currentUser()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        return $_SESSION['user_id'] ?? null;
+    }
+
     function todoRecap()
     {
+        $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $todayTodos = $model->getTodos(0, true);
-        $allTodos = $model->getTodos(0);
-
-        // echo "<h3>Contoh Input dan Output</h3>";
-        // echo "<pre>";
-        // echo "Input untuk getTodos(0, true):\n";
-        // var_dump(['is_done' => 0, 'today_only' => true]);
-        // echo "\nOutput dari getTodos(0, true):\n";
-        // var_dump($allTodos);
+        $todayTodos = $model->getTodos($uid,0, true);
+        $allTodos = $model->getTodos($uid,0,false);
         $this->loadView('todorecap.php', [
             'all' => $allTodos,
             'today' => $todayTodos
@@ -23,8 +25,9 @@ class Recap extends Controller
 
     function todoDetailAll()
     {
+        $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $allTodos = $model->getTodos(0);
+        $allTodos = $model->getTodos($uid,0,false);
         $this->loadView('tododetail-all.php', [
             'all' => $allTodos
         ]);
@@ -32,8 +35,9 @@ class Recap extends Controller
 
     function todoDetailToday()
     {
+        $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $todayTodos = $model->getTodos(0, true);
+        $todayTodos = $model->getTodos($uid,0, true);
         $this->loadView('tododetail-today.php', [
             'today' => $todayTodos
         ]);
@@ -41,8 +45,9 @@ class Recap extends Controller
 
     function todoDone()
     {
+        $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $doneTodos = $model->getTodos(1);
+        $doneTodos = $model->getTodos($uid,1,false);
         $this->loadView('todo-done.php', [
             'done' => $doneTodos
         ]);
@@ -68,6 +73,7 @@ class Recap extends Controller
 
     function downloadPDF()
     {
+        $uid   = $this->currentUser();  
         require_once('./dompdf/autoload.inc.php');
         $dompdf = new \Dompdf\Dompdf();
         $model = $this->loadModel('TodoModel');
@@ -81,16 +87,16 @@ class Recap extends Controller
 
         switch ($filter) {
             case 'done':
-                $todos = $model->getTodos(1);
+                $todos = $model->getTodos($uid,1,false);
                 break;
             case 'all':
-                $todos = $model->getTodos(0);
+                $todos = $model->getTodos($uid,0,false);
                 break;
             case 'today':
-                $todos = $model->getTodos(0, true);
+                $todos = $model->getTodos($uid,0, true);
                 break;
             default:
-                $todos = $model->getTodos(0);
+                $todos = $model->getTodos($uid,0,false);
                 break;
         }
 

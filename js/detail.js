@@ -1,59 +1,79 @@
-const urlParams = new URLSearchParams(window.location.search);
-const dateParams = urlParams.get('date');
-const taskContainer = document.getElementById("detail-container");
+// Kode ini udh gakepake lagi ya dev, soalnya langsung pakai tag a
+// function clicked(element) {
+//   if (element.classList.contains('bg-customBlue-normal')) {
+//     element.classList.remove('bg-customBlue-normal');
+//   } else {
+//     element.classList.add('bg-customBlue-normal');
+//   }
+// }
 
-function fetchTodos(date){
-    fetch("../js/task.json")
-        .then(response => response.json())
-        .then(task => {
-            const today = new Date().toISOString().split("T")[0];
-            const filteredTask = task.filter(task => task.date === today)
-            const allTask = task.filter(task => task.done == false)
-          
+const addTaskBtn = document.getElementById('addTaskBtn');
+const addTaskOverlay = document.getElementById('addTaskOverlay');
 
-            taskContainer.innerHTML = date === 'today'
-            ?
-               `<div class="flex flex-col h-screen">
-                    <header class="flex justify-between items-center p-5 text-2xl font-bold ">
-                        <button><</button>
-                        <h1>Today</h1>
-                        <div></div>
-                    </header>
-                    <div class="p-3 flex flex-col gap-y-3 flex-grow overflow-y-auto">
-                        ${renderTasks(filteredTask)}
-                    </div>
-                    <div class="sticky bottom-4 p-3">
-                        <button id="download-btn" class="w-full bg-black text-white px-4 py-3 rounded-lg ">
-                        Download PDF
-                        </button>
-                    </div>
-                </div>`
-            :  
-               `<div class="flex flex-col h-screen">
-                    <header class="flex justify-between items-center p-5 text-2xl font-bold ">
-                        <button><</button>
-                        <h1>All</h1>
-                        <div></div>
-                    </header>
-                    <div class="p-3 flex flex-col gap-y-3 flex-grow overflow-y-auto">
-                        ${renderTasks(allTask)}
-                    </div>
-                    <div class="sticky bottom-4 p-3">
-                        <button id="download-btn" class="w-full bg-black text-white px-4 py-3 rounded-lg ">
-                        Download PDF
-                        </button>
-                    </div>
-                </div>`
-        })
+addTaskBtn.addEventListener('click', () => {
+  addTaskOverlay.classList.remove('hidden');
+});
+
+function toggleMenu(id) {
+  const menu = document.getElementById(`menu-${id}`);
+  document.querySelectorAll('[id^="menu-"]').forEach((m) => {
+    if (m !== menu) m.classList.add('hidden');
+  });
+  menu.classList.toggle('hidden');
 }
 
-function renderTasks(tasks) {
-return tasks.map(task => `
-    <div class="flex justify-between text-lg items-center">
-        <p class="${task.done ? 'line-through text-gray-500' : ''}">${task.text}</p>
-        <img src="../images/${task.done ? 'circle-filled.png' : 'circle.png'}" class="h-6">
-    </div>
-`).join("");
+window.addEventListener('click', function (e) {
+  const isMenuClick = e.target.closest("[id^='menu-']");
+  const isToggleClick = e.target.closest("button[onclick^='toggleMenu']");
+  const isInsideMenuAction = e.target.closest('[data-menu-ignore]');
+
+  if (!isMenuClick && !isToggleClick && !isInsideMenuAction) {
+    document.querySelectorAll('[id^="menu-"]').forEach((m) => m.classList.add('hidden'));
+  }
+});
+
+function cancelAdd() {
+  document.getElementById('addTaskOverlay').classList.add('hidden');
+  TaskId = null;
 }
 
-fetchTodos(dateParams)
+let editingTaskId = null;
+
+function openEditModal(id, title, dueDate) {
+  document.getElementById('editTaskId').value = id;
+  document.getElementById('editInput').value = title;
+  document.getElementById('editDateInput').value = dueDate;
+  document.getElementById('editTaskOverlay').classList.remove('hidden');
+}
+
+function cancelEdit() {
+  document.getElementById('editTaskOverlay').classList.add('hidden');
+}
+
+let taskToDeleteId = null;
+
+function deleteTask(id) {
+  document.getElementById('deleteTaskOverlay').classList.remove('hidden');
+}
+
+function showDeleteModal(id, folderId) {
+  const overlay = document.getElementById('deleteTaskOverlay');
+  const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+  confirmBtn.href = `index.php?c=taskList&m=delete&id=${id}&folder_id=${folderId}`;
+
+  overlay.classList.remove('hidden');
+}
+
+function cancelDelete() {
+  taskToDeleteId = null;
+  document.getElementById('deleteTaskOverlay').classList.add('hidden');
+}
+
+function confirmDelete() {
+  const taskElement = document.getElementById(`task-${taskToDeleteId}`);
+  if (taskElement) {
+    taskElement.remove();
+  }
+  cancelDelete();
+}
