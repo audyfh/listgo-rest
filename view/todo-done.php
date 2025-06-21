@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="output.css">
+    <script src="./jquery.js"></script>
     <title>Todo Recap</title>
 </head>
 
@@ -23,21 +24,8 @@
             <h2>Done</h2>
         </div>
         <div class="flex flex-col min-h-screen">
-            <div class="p-3 flex flex-col gap-y-3 flex-grow overflow-y-auto">
-                <?php foreach ($done as $todo): ?>
-                    <div class="flex justify-between text-lg items-center">
-                        <div class="flex items-center">
-                            <span class="text-customBlue-dark font-extrabold cursor-pointer open-delete-modal" data-id="<?= $todo['id'] ?>">⫶</span>
-                            <div class="ms-3">
-                                <p class="font-medium"><?= $todo['title'] ?></p>
-                                <p class="text-sm text-gray-500">Due: <?= date('d M Y', strtotime($todo['due_date'])) ?></p>
-                            </div>
-                        </div>
-                        <a href="index.php?c=Recap&m=toggleDone&id=<?= $todo['id'] ?>">
-                            <div class="h-7 w-7 border-2 border-black rounded-lg bg-customBlue-normal  mt-1"></div>
-                        </a>
-                    </div>
-                <?php endforeach; ?>
+            <div id="task-container" class="p-3 flex flex-col gap-y-3 flex-grow overflow-y-auto">
+               
             </div>
             <a class="sticky bottom-4 p-3" href="?c=Recap&m=downloadPDF&filter=done">
                 <button class="w-full bg-customBlue-dark border-2 border-black font-bold text-white px-4 py-3 rounded-lg ">Download PDF</button>
@@ -53,12 +41,108 @@
             </div>
         </div>
     </div>
+ 
     <script>
-        document.getElementById("todo-btn").addEventListener("click", function() {
-            window.location.href = "?c=Recap&m=todoRecap";
+
+    $("#todo-btn").on("click", function() {
+        window.location.href = "?c=Recap&m=todoRecap";
+    });
+    const userId = <?= $this->currentUser(); ?>;
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
         });
+    }
+
+    function renderTodos(todos, containerId) {
+        const container = $(containerId);
+        container.empty();
+
+        todos.forEach(todo => {
+            const todoHtml = `
+                <div class="flex justify-between text-lg items-center">
+                    <div class="flex items-center">
+                        <span class="text-customBlue-dark font-extrabold cursor-pointer open-delete-modal" data-id="${todo.id}">⫶</span>
+                        <div class="ms-3">
+                            <p class="font-medium">${todo.title}</p>
+                            <p class="text-sm text-gray-500">Due: ${formatDate(todo.due_date)}</p>
+                        </div>
+                    </div>
+                    <div class="h-7 w-7 border-2 bg-customBlue-normal border-black rounded-lg mt-1 cursor-pointer toggle-done" data-id="${todo.id}"></div>
+                </div>
+            `;
+            container.append(todoHtml);
+        });
+    }
+
+    function fetchTodos(todayOnly, containerId) {
+        $.get(`http://localhost:8000/api/recap/todos`, {
+            userId: userId,
+            isDone: 1,
+            todayOnly: todayOnly
+        }, function (data) {
+            renderTodos(data, containerId);
+        });
+    }
+
+    function loadTodos() {
+        fetchTodos(false, "#task-container");
+    }
+
+    // Toggle done
+    $(document).on("click", ".toggle-done", function () {
+        const id = $(this).data("id");
+        $.ajax({
+            url: `http://localhost:8000/api/recap/toggle/${id}`,
+            method: 'PATCH',
+            success: function () {
+                loadTodos();
+            }
+        });
+    });
+
+    // Load todos on page ready
+    $(document).ready(function () {
+        loadTodos();
+    });
+
+        $(document).on("click", ".open-delete-modal", function () {
+        const todoId = $(this).data("id");
+        $("#confirm-delete").data("id", todoId);
+        $("#delete-modal").removeClass("hidden").addClass("flex");
+    });
+
+    // Handle cancel delete
+    $("#cancel-delete").on("click", function () {
+        $("#delete-modal").addClass("hidden");
+        $("#confirm-delete").removeData("id");
+    });
+
+    // Handle confirm delete
+    $("#confirm-delete").on("click", function (e) {
+        e.preventDefault();
+        const todoId = $(this).data("id");
+        if (!todoId) return;
+
+        $.ajax({
+            url: `http://localhost:8000/api/recap/delete/${todoId}`,
+            method: 'DELETE',
+            success: function () {
+                $("#delete-modal").addClass("hidden");
+                loadTodos(); // reload todos setelah delete
+            },
+            error: function () {
+                alert("Gagal menghapus todo.");
+            }
+        });
+    });
+
+   
     </script>
-    <script src="./js/script.js"></script>
 </body>
 
 </html>

@@ -14,43 +14,34 @@ class Recap extends Controller
     function todoRecap()
     {
         $uid   = $this->currentUser();  
-        $model = $this->loadModel('TodoModel');
-        $todayTodos = $model->getTodos($uid,0, true);
-        $allTodos = $model->getTodos($uid,0,false);
-        $this->loadView('todorecap.php', [
-            'all' => $allTodos,
-            'today' => $todayTodos
-        ]);
+        // $model = $this->loadModel('TodoModel');
+        // $todayTodos = $model->getTodos($uid,0, true);
+        // $allTodos = $model->getTodos($uid,0,false);
+        $this->loadView('todorecap.php');
     }
 
     function todoDetailAll()
     {
         $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $allTodos = $model->getTodos($uid,0,false);
-        $this->loadView('tododetail-all.php', [
-            'all' => $allTodos
-        ]);
+        // $allTodos = $model->getTodos($uid,0,false);
+        $this->loadView('tododetail-all.php');
     }
 
     function todoDetailToday()
     {
         $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $todayTodos = $model->getTodos($uid,0, true);
-        $this->loadView('tododetail-today.php', [
-            'today' => $todayTodos
-        ]);
+        // $todayTodos = $model->getTodos($uid,0, true);
+        $this->loadView('tododetail-today.php');
     }
 
     function todoDone()
     {
         $uid   = $this->currentUser();  
         $model = $this->loadModel('TodoModel');
-        $doneTodos = $model->getTodos($uid,1,false);
-        $this->loadView('todo-done.php', [
-            'done' => $doneTodos
-        ]);
+        // $doneTodos = $model->getTodos($uid,1,false);
+        $this->loadView('todo-done.php');
     }
 
     function toggleDone()

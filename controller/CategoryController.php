@@ -16,8 +16,8 @@ class Category extends Controller
     {
         $uid = $this->currentUserId();
         $model = $this->loadModel('CategoryModel');
-        $categories = $model->getAll($uid);
-        $this->loadView('sidebar.php', ['categories' => $categories]);
+        // $categories = $model->getAll($uid);
+        $this->loadView('sidebar.php', ['userId' => $uid]);
     }
 
     /* ====== CREATE ====== */
@@ -37,8 +37,8 @@ class Category extends Controller
     {
         $uid = $this->currentUserId();
         $model = $this->loadModel('CategoryModel');
-        $categories = $model->getAll($uid);
-        $this->loadView('manage.php', ['categories' => $categories]);
+        // $categories = $model->getAll($uid);
+        $this->loadView('manage.php', ['userId' => $uid]);
     }
 
     /* ====== UPDATE ====== */
