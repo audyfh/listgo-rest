@@ -25,8 +25,6 @@
     <img src="./images/tambah-tugas.png" alt="Add Task" class="w-20 h-20" />
   </button>
 
-
-
   <div id="addTaskOverlay" class="fixed inset-0 bg-opacity-50 flex items-center justify-center z-10 hidden">
     <div class="bg-white p-6 rounded-xl border border-black w-80">
       <input id="taskInputTitle" type="text" placeholder="Input new task here" name="title" class="w-full border border-black p-2 rounded mb-4" required />
@@ -36,11 +34,6 @@
         <button type="button" onclick="submitTask()" class="bg-black text-white px-4 py-2 rounded">Add Task</button>
       </div>
     </div>
-  </div>
-
-
-
-  </div>
   </div>
 
   <div id="editTaskOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -57,12 +50,9 @@
       <div class="flex justify-end gap-2">
         <button type="button" onclick="cancelEdit()" class="px-4 py-2 border border-black rounded hover:bg-gray-100 font-semibold">Cancel</button>
         <button type="button" onclick="submitEdit()" class="text-white px-4 py-2 rounded font-semibold" style="background-color: #7fb2f0;">Update Task</button>
-
       </div>
     </div>
   </div>
-
-
 
   <div id="deleteTaskOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-80">
@@ -77,7 +67,10 @@
   <script>
     const userId = <?= json_encode($userId ?? null) ?>;
     const folderId = <?= $_GET['folder_id'] ?? 'null' ?>;
-    // Ambil semua folder milik user
+    
+    // Membuat variable global untuk menyimpan data
+    let todos = [];
+
     function loadFolders() {
       $.get(`http://localhost:8000/api/category/${userId}`, function(folders) {
         const folderContainer = $("#folder-container");
@@ -98,11 +91,14 @@
       });
     }
 
-    // Ambil semua tugas berdasarkan folder dan user
     function loadTodos() {
       if (!folderId || !userId) return;
 
-      $.get(`http://localhost:8000/api/list/${userId}/${folderId}`, function(todos) {
+      $.get(`http://localhost:8000/api/list/${userId}/${folderId}`, function(data) {
+
+        // Membuat Variabel Baru
+        todos = data;
+
         const taskContainer = $("#task-container");
         taskContainer.empty();
 
@@ -129,78 +125,77 @@
                 </div>
                 <div class="h-7 w-7 border-2 border-black rounded-lg mt-1 toggle-done ${doneClass}" data-id="${todo.id}"></div>
               </div>
-              <div id="menu-${todo.id}" class="absolute inset-0 bg-black/30 flex items-center justify-center z-50 hidden py-4">
-                <div class="flex flex-col items-center bg-white border border-[#7fb2f0] rounded-xl w-52 shadow-lg overflow-hidden py-2" onclick="event.stopPropagation()">
-                  <button 
-                    class="edit-btn w-11/12 text-center px-4 py-2 text-[#2563eb] border border-[#cbd5e1] rounded-md font-medium hover:bg-[#eff6ff] transition mb-10"
-                    data-id="${todo.id}" 
-                    data-title="${todo.title.replace(/"/g, '&quot;')}" 
-                    data-due="${todo.due_date}">
-                    Edit
-                  </button>
-                  <div class="border-t border-gray-200"></div>
-                  <button onclick="showDeleteModal(${todo.id}, ${todo.folder_id})" class="w-11/12 text-center mt-2 px-4 py-2 text-red-600 border border-[#fca5a5] rounded-md font-medium hover:bg-red-50 transition">Delete</button>
-                </div>
-              </div>
             </div>
           `);
-
-
         });
-
-
       });
     }
-
-
 
     $(document).ready(function() {
       loadFolders();
       loadTodos();
-      // Tampilkan modal tambah task
+      
       $('#addTaskBtn').on('click', function() {
         $('#addTaskOverlay').removeClass('hidden');
       });
 
-      // Batal tambah task
       window.cancelAdd = function() {
         $('#addTaskOverlay').addClass('hidden');
-        TaskId = null;
+        $('#taskInputTitle').val('');
+        $('#taskInputDate').val('');
       };
 
-      // Buka/tutup menu pop-up (menu-123)
       window.toggleMenu = function(id) {
-        const menu = $(`#menu-${id}`);
-        $('[id^="menu-"]').not(menu).addClass('hidden');
-        menu.toggleClass('hidden');
+        
+        $('[id^="menu-"]').remove();
+        
+
+        const todoData = todos.find(t => t.id === id);
+        if (!todoData) return;
+        
+        // Membuat menu baru untuk masing-masing task
+        const taskMenu = `
+          <div id="menu-${id}" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+            <div class="flex flex-col items-center bg-white border border-[#7fb2f0] rounded-xl w-52 shadow-lg overflow-hidden py-2" onclick="event.stopPropagation()">
+              <button 
+                onclick="openEditModal(${id}, '${todoData.title.replace(/'/g, "\\'")}', '${todoData.due_date}'); closeMenu(${id})"
+                class="w-11/12 text-center px-4 py-2 text-[#2563eb] border border-[#cbd5e1] rounded-md font-medium hover:bg-[#eff6ff] transition mb-2">
+                Edit
+              </button>
+              <button onclick="showDeleteModal(${id}); closeMenu(${id})" 
+                class="w-11/12 text-center px-4 py-2 text-red-600 border border-[#fca5a5] rounded-md font-medium hover:bg-red-50 transition">
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+        
+        $('body').append(taskMenu);
+        
+        $(`#menu-${id}`).on('click', function(e) {
+          if (e.target === this) {
+            closeMenu(id);
+          }
+        });
       };
 
-      // Menutup semua menu saat klik di luar
-      $(window).on('click', function(e) {
-        const isMenuClick = $(e.target).closest("[id^='menu-']").length > 0;
-        const isToggleClick = $(e.target).closest("button[onclick^='toggleMenu']").length > 0;
-        const isInsideMenuAction = $(e.target).closest('[data-menu-ignore]').length > 0;
-
-        if (!isMenuClick && !isToggleClick && !isInsideMenuAction) {
-          $('[id^="menu-"]').addClass('hidden');
-        }
-      });
-
+      window.closeMenu = function(id) {
+        $(`#menu-${id}`).remove();
+      };
 
       window.cancelEdit = function() {
         $('#editTaskOverlay').addClass('hidden');
       };
 
-      // Delete modal
       window.taskToDeleteId = null;
 
-      window.showDeleteModal = function(id, folderId) {
+      window.showDeleteModal = function(id) {
         $('#deleteTaskOverlay').removeClass('hidden');
         window.taskToDeleteId = id;
       };
 
       window.cancelDelete = function() {
-        taskToDeleteId = null;
+        window.taskToDeleteId = null;
         $('#deleteTaskOverlay').addClass('hidden');
       };
 
@@ -210,17 +205,18 @@
           type: "DELETE",
           contentType: "application/json",
           data: JSON.stringify({
-            id: taskToDeleteId,
+            id: window.taskToDeleteId,
             user_id: userId
           }),
-          success: () => {
+          success: function() {
             cancelDelete();
-            loadTodos(); // reload list
+            loadTodos();
           },
-          error: () => alert("Gagal hapus task")
+          error: function() {
+            alert("Gagal hapus task");
+          }
         });
       };
-
 
       $(document).on("click", ".toggle-done", function() {
         const id = $(this).data("id");
@@ -232,9 +228,7 @@
           }
         });
       });
-
     });
-
 
     function submitTask() {
       const title = $('#taskInputTitle').val();
@@ -252,11 +246,13 @@
           title: title,
           due_date: due_date
         }),
-        success: () => {
+        success: function() {
           cancelAdd();
           loadTodos();
         },
-        error: () => alert("Gagal tambah task")
+        error: function() {
+          alert("Gagal tambah task");
+        }
       });
     }
 
@@ -277,15 +273,15 @@
           title: title,
           due_date: due_date
         }),
-        success: () => {
+        success: function() {
           cancelEdit();
           loadTodos();
         },
-        error: () => alert("Gagal edit task")
+        error: function() {
+          alert("Gagal edit task");
+        }
       });
     }
-
-
 
     function openEditModal(id, title, dueDate) {
       $('#editTaskId').val(id);
