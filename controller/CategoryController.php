@@ -20,17 +20,6 @@ class Category extends Controller
         $this->loadView('sidebar.php', ['userId' => $uid]);
     }
 
-    /* ====== CREATE ====== */
-    public function addCategory()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
-            $uid = $this->currentUserId();
-            $model = $this->loadModel('CategoryModel');
-            $model->create($uid, $_POST['name']);
-            echo 'success';
-            exit;
-        }
-    }
 
     /* ====== READ (kelola) ====== */
     public function manage_category()
@@ -41,27 +30,6 @@ class Category extends Controller
         $this->loadView('manage.php', ['userId' => $uid]);
     }
 
-    /* ====== UPDATE ====== */
-    public function updateCategory()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['name'])) {
-            $uid = $this->currentUserId();
-            $model = $this->loadModel('CategoryModel');
-            $model->update($uid, $_POST['id'], $_POST['name']);
-            echo 'updated';
-            exit;
-        }
-    }
 
-    /* ====== DELETE ====== */
-    public function deleteCategory()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-            $uid = $this->currentUserId();
-            $model = $this->loadModel('CategoryModel');
-            $model->delete($uid, $_POST['id']);
-            echo 'deleted';
-            exit;
-        }
-    }
+  
 }

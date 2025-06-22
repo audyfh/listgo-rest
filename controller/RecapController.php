@@ -44,23 +44,7 @@ class Recap extends Controller
         $this->loadView('todo-done.php');
     }
 
-    function toggleDone()
-    {
-        $id = $_GET['id'];
-        $model = $this->loadModel('TodoModel');
-        $model->toggleDone($id);
-        header("Location: index.php?c=Recap&m=todoRecap");
-        exit;
-    }
-
-    function deleteTodo()
-    {
-        $id = $_GET['id'];
-        $model = $this->loadModel('TodoModel');
-        $model->deleteTodo($id);
-        header("Location: index.php?c=Recap&m=todoRecap");
-        exit;
-    }
+    
 
     function downloadPDF()
     {

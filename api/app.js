@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/category", categoryRoutes);
-
+app.use("/api/list", listRoutes);
 app.use("/api/recap", recapRoutes);
 
 app.listen(port, () => {
