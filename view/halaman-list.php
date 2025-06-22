@@ -31,7 +31,7 @@
       <input id="taskInputDate" type="date" name="due_date" class="w-full border border-black p-2 rounded mb-4" required />
       <div class="flex justify-end gap-2">
         <button type="button" onclick="cancelAdd()" class="px-4 py-2 border border-black rounded hover:bg-gray-100 font-semibold">Cancel</button>
-        <button type="button" onclick="submitTask()" class="bg-black text-white px-4 py-2 rounded">Add Task</button>
+        <button type="button" onclick="submitTask()" class="text-white px-4 py-2 rounded font-semibold" style="background-color: #7fb2f0;">Add Task</button>
       </div>
     </div>
   </div>
